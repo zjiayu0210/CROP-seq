@@ -3,12 +3,12 @@ library(Seurat)
 library(dplyr)
 library(readxl)
 
-data <- Read10X(data.dir = "~/CROP-seq/new_data_another_method/Count_output/CROP_scRNA/outs/filtered_feature_bc_matrix/")
+data <- Read10X(data.dir = "~/CROP-seq/new_data/Count_output/CROP_scRNA/outs/filtered_feature_bc_matrix/")
 # Create Seurat object
 seurat_obj <- CreateSeuratObject(data, project = "scCROP-seq", assay = "scRNA")
 # Functions for preprocessing of KO barcode data
 # Can use with UMIs (umi = TRUE) or reads (UMI=FALSE)
-barcode_association <- read.csv("~/CROP-seq/new_data_another_method/Count_output/ko_barcodes.txt", sep = "\t")
+barcode_association <- read.csv("~/CROP-seq/new_data/Count_output/ko_barcodes.txt", sep = "\t")
 barcodes <- dplyr::as_tibble(barcode_association)
 barcodes$count_column <- barcodes$umi_count
 
