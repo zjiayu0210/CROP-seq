@@ -1,3 +1,4 @@
+# load table which is specific barcode-associated cells with the number of times a given UMI is observed with each observed guide assignment
 barcode_association <- read.csv("ko_barcodes.txt", sep = "\t")
 barcodes <-  dplyr::as_tibble(barcode_association)
 barcodes$count_column <-  barcodes$umi_count
@@ -63,6 +64,7 @@ ggsave(p1, filename = file_path, width = 15, height = 10)
 saveRDS(seurat_obj, "./CROP-seq_seurat.rds")
 
 #Violin plot (visualization)
+#PPAR_1 guide sequence are not identified
 subSG <- as.character(c("FOXO1_1", "FOXO1_2", "Ctrl", "PPARA_2", "HNF4A_1", "HNF4A_2", "GABPA_1", "GABPA_2", "YAP1_1", "YAP1_2", "HDAC3_1", "HDAC3_2"))
 
 gene_mapping <- list(
@@ -108,35 +110,3 @@ for (i in 1:length(subSG)) {
   }
 }
 
-for (i in 1:length(subSG)) {
-  gene <- subSG[i]
-  
-  if (gene != "Ctrl") {
-    target_gene <- gene_mapping[[gene]]
-    
-    if (target_gene %in% rownames(seurat_obj)) {
-      cellTarget <- metadata %>% filter(target == !!gene) %>% pull(cell)
-      cellNTC <- metadata %>% filter(grepl("Ctrl", target)) %>% pull(cell)
-      
-      if (length(cellTarget) > 0 && length(cellNTC) > 0) {
-        seurat_obj$type <- "NS"
-        seurat_obj$type[Cells(seurat_obj) %in% cellTarget] <- "Target"
-        seurat_obj$type[Cells(seurat_obj) %in% cellNTC] <- "NTC"
-        
-        plot <- VlnPlot(seurat_obj, features = target_gene, group.by = "type", y.max = 3) +
-          geom_boxplot(width = 0.25, fill = "white") +
-          stat_compare_means(method = "wilcox.test", label = "p.format", comparisons = list(c("NS", "NTC"), c("NTC", "Target"), c("NS", "Target")))+
-          ggtitle(paste("Violin Plot for", gene))
-        
-        plot_filename <- paste0(plot_dir, "Violin_Plot_", gene, ".svg")
-        ggsave(plot_filename, plot = plot, width = 8, height = 6)
-        
-        print(plot)
-      } else {
-        warning(paste("No cells found for target:", gene))
-      }
-    } else {
-      warning(paste("Feature", target_gene, "not found in Seurat object"))
-    }
-  }
-}
