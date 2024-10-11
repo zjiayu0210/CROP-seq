@@ -13,9 +13,9 @@ barcodes <- dplyr::as_tibble(barcode_association)
 barcodes$count_column <- barcodes$umi_count
 
 # Prefiltering
-barcodes = dplyr::as_tibble(barcode_association)
-barcodes = barcodes %>% dplyr::filter(umi_count > 0)
-barcodes = barcodes %>% filter(!grepl('unprocessed', barcode))
+barcodes <- dplyr::as_tibble(barcode_association)
+barcodes <- barcodes %>% dplyr::filter(umi_count > 0)
+barcodes <- barcodes %>% filter(!grepl('unprocessed', barcode))
 
 barcodes = barcodes %>%
   dplyr::group_by(cell) %>%
@@ -29,12 +29,12 @@ barcodes = barcodes %>% mutate(barcode=toupper(barcode))
 proportion_threshold=0.05
 reads_threshold=2
 
-barcodes.initial = barcodes %>%
+barcodes.initial <- barcodes %>%
   dplyr::filter(proportion > proportion_threshold & umi_count > reads_threshold)
 
-# guide_metadata =  read_excel("sgRNA_genename.xlsx")
-guide_metadata = guide_metadata %>% mutate(gRNA=toupper(gRNA))
-barcodes.initial = dplyr::inner_join(barcodes.initial, guide_metadata, by=c("barcode"="gRNA"))
+# guide_metadata <-  read_excel("sgRNA_genename.xlsx")
+guide_metadata <- guide_metadata %>% mutate(gRNA=toupper(gRNA))
+barcodes.initial <- dplyr::inner_join(barcodes.initial, guide_metadata, by=c("barcode"="gRNA"))
 #check whether there is any cell with more than one guideRNA
 unique_gRNA_per_cell <- barcodes.initial %>%
   group_by(cell) %>%
