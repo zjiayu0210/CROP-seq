@@ -26,8 +26,8 @@ single_gRNA_cells <- unique_gRNA_per_cell %>%
 
 barcodes.initial <- inner_join(barcodes.initial, single_gRNA_cells, by = "cell")
 
-guide_metadata =  read_excel("sgRNA_genename.xlsx")
-guide_metadata = guide_metadata %>% mutate(gRNA=toupper(gRNA))
+guide_metadata <-  read_excel("sgRNA_genename.xlsx")
+guide_metadata <- guide_metadata %>% mutate(gRNA=toupper(gRNA))
 barcodes.initial <-  dplyr::inner_join(barcodes.initial, guide_metadata, by=c("barcode"="gRNA"))
 write.csv(barcodes.initial, "barcode_enrichment.csv")
 
@@ -79,19 +79,15 @@ dir.create(plot_dir, showWarnings = FALSE)
 metadata <- seurat_obj@meta.data
 for (i in 1:length(subSG)) {
   gene <- subSG[i]
-  
   if (gene != "Ctrl") {
     target_gene <- gene_mapping[[gene]]
-    
     if (target_gene %in% rownames(seurat_obj)) {
       cellTarget <- metadata %>% filter(target == !!gene) %>% pull(cell)
       cellNTC <- metadata %>% filter(grepl("Ctrl", target)) %>% pull(cell)
-      
       if (length(cellTarget) > 0 && length(cellNTC) > 0) {
         seurat_obj$type <- "NS"
         seurat_obj$type[Cells(seurat_obj) %in% cellTarget] <- "Target"
         seurat_obj$type[Cells(seurat_obj) %in% cellNTC] <- "NTC"
-        
         plot <- VlnPlot(seurat_obj, features = target_gene, group.by = "type", y.max = 3) +
           geom_boxplot(width = 0.25, fill = "white") +
           stat_compare_means(label = "p.signif", comparisons = list(c("NS", "NTC"), c("NTC", "Target"), c("NS", "Target")))+
@@ -102,10 +98,10 @@ for (i in 1:length(subSG)) {
         
         print(plot)
       } else {
-        warning(paste("No cells found for target:", gene))
+        print(paste("No cells found for target:", gene))
       }
     } else {
-      warning(paste("Feature", target_gene, "not found in Seurat object"))
+      print(paste("Feature", target_gene, "not found in Seurat object"))
     }
   }
 }
