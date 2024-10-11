@@ -42,7 +42,6 @@ gunzip ${OUTPUT_FA}
 #add sgRNA to the human reference GTF.
 #first process the GTF file as metioned in 10x cell ranger notes.
 ID="(ENS(MUS)?[GTE][0-9]+)\.([0-9]+)"
-# we do not need to Pattern matches Ensembl gene, transcript, and exon IDs for human or mouse as metioned in notebook, for we already have the gene version information.
 # Construct the gene ID allowlist. We filter the list of all transcripts
 # based on these criteria:
 #   - allowable gene_type (biotype)
@@ -89,14 +88,11 @@ cellranger mkref \
 --fasta=/home/zjiayu/CROP-seq/new_data/hg38_GFP/Homo_sapiens.GRCh38.mix_sgRNA.fa \
 --genes=/home/zjiayu/CROP-seq/new_data/hg38_GFP/Homo_sapiens.GRCh38.mix_sgRNA.gtf
 
-# module load cellranger/7.0.0
-
 #map to reference with sgRNA
 cellranger count --localcores=10 --id=ENRICH \
 --sample=library_2 --fastqs=/home/zjiayu/CROP-seq/new_data/Fastq_output/HM7L2AFX3// \
 --transcriptome=/home/zjiayu/CROP-seq/new_data/hg38_GFP/CROP_genome/ \
 --output-dir=/home/zjiayu/CROP-seq/new_data/Count_output/
-
 
 #process the scRNA-seq part
 cellranger count --localcores=10 --id=CROP_scRNA \
